@@ -13,13 +13,8 @@ public class CppClassDeclarationGenerator {
         String classStr = generateClass(impl);
 
         String res = headerStr + "\n\n" + classStr;
-        String filePath = dirPath;
-        if (filePath.charAt(filePath.length() - 1) != '/') {
-            filePath += '/';
-        }
-        filePath += impl.getCodeGetName().replace(".", "/") + ".h";
 
-        saveFile(res, filePath);
+        saveFile(res, dirPath, impl.getCodeGetName());
     }
 
     private String generateHeader(String rawClassName) {
@@ -83,13 +78,26 @@ public class CppClassDeclarationGenerator {
         return res;
     }
 
-    private void saveFile(String str, String filePath) {
+    private void saveFile(String str, String parentPath, String rawClassName) {
         try {
-            File file = new File(filePath);
+            String dirPath = parentPath;
+            if (dirPath.charAt(dirPath.length() - 1) != '/') {
+                dirPath += '/';
+            }
+
+            // 名前空間を解決した親パスを生成
+            int index = rawClassName.lastIndexOf(".");
+            if (index >= 0) {
+                dirPath += rawClassName.substring(0, index).replace(".", "/") + "/";
+            }
 
             // ディレクトリを作成
-            File dir = new File(file.getParent());
-            dir.mkdir();
+            File dir = new File(dirPath);
+            dir.mkdirs();
+
+            String filePath = dirPath;
+            filePath += rawClassName.substring(index + 1) + ".h";
+            File file = new File(filePath);
 
             FileWriter fw = new FileWriter(file);
             fw.write(str);

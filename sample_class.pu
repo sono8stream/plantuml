@@ -1,0 +1,18 @@
+@startuml
+
+namespace N1{
+class Person{
+    Option option
+}
+}
+
+class Option{
+    int hoge
+    double hoge2
+    void Fuga()
+    int Fuga2()
+}
+
+N1.Person -> Option
+
+@enduml
