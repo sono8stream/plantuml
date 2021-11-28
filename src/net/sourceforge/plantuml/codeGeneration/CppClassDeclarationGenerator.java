@@ -14,6 +14,11 @@ public class CppClassDeclarationGenerator {
 
         String res = headerStr + "\n\n" + classStr;
 
+        String regexMemberType = ".*(?=\\s.*)";// OK
+        String regexMemberName = "\\S*\\Z";// OK
+        String regexFuncType = ".*(?=\\s.*\\(.*\\))";// OK
+        String regexFuncName = "\\S*\\(.*\\)";// OK
+
         saveFile(res, dirPath, impl.getCodeGetName());
     }
 

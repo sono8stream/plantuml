@@ -9,8 +9,10 @@ class Person{
 class Option{
     int hoge
     double hoge2
-    void Fuga()
-    int Fuga2()
+    void fuga()
+    int fuga2(int a, int b)
+    Type<A, B> fuga3()
+    Type<A, B> fuga4(Type<C, D> a, int b)
 }
 
 N1.Person -> Option
