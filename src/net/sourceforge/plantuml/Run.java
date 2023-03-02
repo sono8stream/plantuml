@@ -59,6 +59,8 @@ import javax.swing.UIManager;
 import net.sourceforge.plantuml.code.NoPlantumlCompressionException;
 import net.sourceforge.plantuml.code.Transcoder;
 import net.sourceforge.plantuml.code.TranscoderUtil;
+import net.sourceforge.plantuml.codeGeneration.CodeGeneratorAbstract;
+import net.sourceforge.plantuml.codeGeneration.CppCodeGenerator;
 import net.sourceforge.plantuml.ftp.FtpServer;
 import net.sourceforge.plantuml.picoweb.PicoWebServer;
 import net.sourceforge.plantuml.png.MetadataTag;
@@ -92,6 +94,10 @@ public class Run {
 		saveCommandLine(argsArray);
 		final Option option = new Option(argsArray);
 		ProgressBar.setEnable(option.isTextProgressBar());
+		if (OptionFlags.getInstance().isGenerateCodeMode()) {
+			generateCode(option);
+			return;
+		}
 		if (OptionFlags.getInstance().isClipboardLoop()) {
 			ClipboardLoop.runLoop();
 			return;
@@ -584,6 +590,27 @@ public class Run {
 				final String s = month.getDisplayName(style, locale);
 				System.err.println(style + " --> '" + s + "'");
 
+			}
+		}
+	}
+
+	public static void generateCode(Option option) {
+		String res = "";
+		final List<File> files = new ArrayList<>();
+		for (String s : option.getResult()) {
+			final FileGroup group = new FileGroup(s, option.getExcludes(), option);
+			incTotal(group.getFiles().size());
+			files.addAll(group.getFiles());
+		}
+		foundNbFiles(files.size());
+		for (File f : files) {
+			try {
+				File outputDir = option.getOutputDir();
+				final CodeGeneratorAbstract generator = new CppCodeGenerator(f, option.getDefaultDefines(f),
+						option.getConfig(), option.getCharset());
+				generator.generateCode();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
